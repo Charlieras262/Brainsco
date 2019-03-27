@@ -27,6 +27,6 @@ app.use('/api/users', require('./routes/user.routes'));
 //Starting Server
 const server = require('http').Server(app)
 server.listen(app.get('port'), () => {
-    console.log(`Server is listening on port ${app.get('port')}`)
+    console.log(`Server Started on http://localhost:${app.get('port')}/`)
 })
 

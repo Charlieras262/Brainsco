@@ -9,7 +9,7 @@ module.exports = () => {
 
     //Database onConnection
     mongoose.connection.on('connected', () => {
-    console.log(`Database connected as ${config.database}`);
+    console.log(`Database connected`);
     });
 
     //Database Connection
