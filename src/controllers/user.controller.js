@@ -44,9 +44,7 @@ UserController.createUser = async (req, res) => {
 
   const userModel = {
     name: req.body.name,
-    lastname: req.body.lastname,
     username: req.body.username,
-    email: req.body.email,
     password: hashData.passwordHash,
     salt: hashData.salt,
     type: req.body.type
@@ -54,12 +52,12 @@ UserController.createUser = async (req, res) => {
   const user = new User(userModel)
   const authRes = authUserInfo(user);
   if (authRes.success) {
-    User.findOne({email: userModel.email}).countDocuments((err, number) => {
+    User.findOne({username: userModel.username}).countDocuments((err, number) => {
       if (number !== 0) {
-        res.json({success: false, msg: 'The email is already used.'});
+        res.json({success: false, msg: 'El nombre de usuario ya esta en uso.'});
       }else{
         user.save();
-        res.json({success: true, msg: 'User created'});
+        res.json({success: true, msg: 'Usuario creado. Ahora puedes Iniciar Sesión'});
       }
     });
   } else {
@@ -112,21 +110,19 @@ var valEmail = (email) => {
 
 UserController.authUserInfo = (req, res) => {
   const userModel = {
-    email: req.body.email,
+    username: req.body.username,
     password: req.body.password
   }
-  var emailR = Validations.isFilled(userModel.email, "Email");
-  var passR = Validations.isFilled(userModel.password, "Password");
-  if(!emailR.success) return res.json(emailR);
-  emailR = valEmail(userModel.email);
+  var emailR = Validations.isFilled(userModel.username, "Nombre de Usuario");
+  var passR = Validations.isFilled(userModel.password, "Constraseña");
   if(!emailR.success) return res.json(emailR);
   if(!passR.success) return res.json(passR);
-  User.getUserByEmail(userModel.email, (err, user) => {
+  User.getUserByUsername(userModel.username, (err, user) => {
     if(err) throw err;
     if(!user){
       res.json({
         success: false,
-        msg: 'User not found!!, Please check the email'
+        msg: 'Usuario no encontrado'
       });
     }else{
       var userJSON = JSON.parse(JSON.stringify(user));
@@ -138,7 +134,7 @@ UserController.authUserInfo = (req, res) => {
         });
         res.json({
           success: true,
-          msg: 'Login success',
+          msg: 'Sesion iniciada con exito.',
           token: 'JWT ' + token,
           user: {
             username: userJSON.username, 
@@ -149,7 +145,7 @@ UserController.authUserInfo = (req, res) => {
       }else{
         res.json({
           success: false,
-          msg: 'Wrong Password!!!'
+          msg: 'Contraseña Incorrecta'
         });
       }
     }
@@ -168,12 +164,7 @@ const authUserInfo = (user) => {
     res = generalValidations.isFilled(user[i], names[i-1]);
     if (!res.success) return res;
   }
-
-  var email = valEmail(userJSON.email);
   
-  if(email.success === false){
-    return email;
-  }
   return {success: true, msg: 'Everything is clear'};
 };
 

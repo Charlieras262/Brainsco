@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const database = require('./database');
 const passport = require('passport');
 const methodOverride = require('method-override');
+const cors = require('cors');
 const app = express()
 
 //Setting
@@ -17,12 +18,16 @@ app.use(morgan('dev'))
 app.use(express.json())
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors({origin: 'http://localhost:4200'}));
 app.use(methodOverride('_method'));
 
 require('./controllers/validations/passport')(passport);
 
 //Routes
 app.use('/api/users', require('./routes/user.routes'));
+app.use('/api/peliculas', require('./routes/pelicula.routes'));
+app.use('/api/sesiones', require('./routes/sesion.routes'));
+app.use('/api/salas', require('./routes/sala.routes'));
 
 //Starting Server
 const server = require('http').Server(app)
