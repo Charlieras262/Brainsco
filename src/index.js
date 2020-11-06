@@ -5,6 +5,7 @@ const database = require('./database');
 const passport = require('passport');
 const methodOverride = require('method-override');
 const cors = require('cors');
+const path = require('path');
 const app = express()
 
 //Setting
@@ -28,6 +29,17 @@ app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/peliculas', require('./routes/pelicula.routes'));
 app.use('/api/sesiones', require('./routes/sesion.routes'));
 app.use('/api/salas', require('./routes/sala.routes'));
+
+app.use(express.static(path.join(__dirname, 'resources')));
+
+// Index Route
+app.get('/', (req, res) => {
+  res.send('invaild endpoint');
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './resources/index.html'));
+});
 
 //Starting Server
 const server = require('http').Server(app)
